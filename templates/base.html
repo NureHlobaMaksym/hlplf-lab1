@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Блог{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --surface: rgba(15, 23, 42, 0.78);
+        --surface-strong: rgba(30, 41, 59, 0.85);
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --border: rgba(148, 163, 184, 0.25);
+        --accent: #7dd3fc;
+        --accent-text: #0b1020;
+        --danger: #f87171;
+        --shadow: 0 24px 60px rgba(2, 6, 23, 0.45);
+      }
+      .btn {
+        border: 1px solid var(--border);
+        border-radius: 0.6rem;
+        padding: 0.45rem 0.9rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text);
+        background: transparent;
+        transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: var(--accent-text);
+        border-color: var(--accent);
+      }
+      .btn-danger {
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+      .btn:hover {
+        background: var(--surface-strong);
+      }
+      .btn-primary:hover {
+        background: var(--accent);
+        color: var(--accent-text);
+        opacity: 0.95;
+      }
+      .btn-danger:hover {
+        background: rgba(248, 113, 113, 0.12);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen" style="font-family: 'Manrope', system-ui, sans-serif; background: var(--bg); color: var(--text);">
+    <div class="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.25),_transparent_58%),radial-gradient(circle_at_30%_70%,_rgba(14,165,233,0.18),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(56,189,248,0.18),_transparent_60%)]"></div>
+    <header class="border-b backdrop-blur" style="border-color: var(--border); background: var(--surface);">
+      <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5">
+        <a href="{% url 'article_list' %}" class="text-xl font-semibold tracking-wide">
+          Блог
+        </a>
+        <nav class="flex items-center gap-4 text-sm">
+          <a class="hover:text-white" href="{% url 'category_list' %}">Категорії</a>
+          {% if user.is_authenticated %}
+            <a class="hover:text-white" href="{% url 'article_create' %}">Додати статтю</a>
+            <span class="text-slate-400">{{ user.display_name }}</span>
+            <form action="{% url 'logout' %}" method="post">
+              {% csrf_token %}
+              <button class="btn" type="submit">
+                Вийти
+              </button>
+            </form>
+          {% else %}
+            <a class="btn" href="{% url 'login' %}">
+              Увійти
+            </a>
+            <a class="btn btn-primary" href="{% url 'signup' %}">
+              Реєстрація
+            </a>
+          {% endif %}
+        </nav>
+      </div>
+    </header>
+
+    <main class="mx-auto w-full max-w-6xl px-4 py-10">
+      {% if messages %}
+        <div class="mb-6 space-y-2">
+          {% for message in messages %}
+            <div class="rounded border px-4 py-2 text-sm" style="border-color: var(--border); background: var(--surface-strong);">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

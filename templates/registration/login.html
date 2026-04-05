@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Вхід{% endblock %}
+
+{% block content %}
+  <div class="flex justify-center">
+  <div class="w-full max-w-md rounded-lg border p-6" style="border-color: var(--border); background: var(--surface); box-shadow: var(--shadow);">
+    <h1 class="text-2xl font-semibold">Вхід</h1>
+    <form method="post" class="mt-6 space-y-4">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div>
+        <label class="text-sm" style="color: var(--muted);">Електронна пошта</label>
+        {{ form.email }}
+      </div>
+      <div>
+        <label class="text-sm" style="color: var(--muted);">Пароль</label>
+        {{ form.password }}
+      </div>
+      {% if next %}
+        <input type="hidden" name="next" value="{{ next }}" />
+      {% endif %}
+      <button class="btn btn-primary w-full" type="submit">
+        Увійти
+      </button>
+    </form>
+  </div>
+  </div>
+{% endblock %}

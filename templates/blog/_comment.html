@@ -1,0 +1,21 @@
+<div class="rounded-lg border p-4" style="border-color: var(--border); background: var(--surface);">
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <p class="text-sm font-semibold">{{ comment.author.display_name }}</p>
+      <p class="text-xs" style="color: var(--muted);">{{ comment.created_at|date:"d.m.Y H:i" }}</p>
+    </div>
+    {% if user.is_authenticated and user == comment.author %}
+      <div class="flex gap-2">
+        <a class="btn" href="{% url 'comment_update' comment.pk %}">Редагувати</a>
+        <button
+          class="btn btn-danger"
+          data-comment-delete
+          data-delete-url="{% url 'comment_delete' comment.pk %}"
+        >
+          Видалити
+        </button>
+      </div>
+    {% endif %}
+  </div>
+  <p class="mt-3 text-sm" style="color: var(--muted);">{{ comment.body|linebreaksbr }}</p>
+</div>

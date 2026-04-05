@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+  <div class="space-y-8">
+    <article class="rounded-lg border p-6" style="border-color: var(--border); background: var(--surface); box-shadow: var(--shadow);">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-widest" style="color: var(--muted);">{{ article.category.name }}</p>
+          <h1 class="text-3xl font-semibold">{{ article.title }}</h1>
+          <p class="text-sm" style="color: var(--muted);">
+            {{ article.author.display_name }} • {{ article.published_at|date:"d.m.Y H:i" }}
+          </p>
+        </div>
+        {% if can_manage %}
+          <div class="flex gap-2">
+            <a class="btn" href="{% url 'article_update' article.pk %}">
+              Редагувати
+            </a>
+            <a class="btn btn-danger" href="{% url 'article_delete' article.pk %}">
+              Видалити
+            </a>
+          </div>
+        {% endif %}
+      </div>
+      <div class="mt-6 max-w-none text-slate-200 leading-relaxed">
+        {{ article.body|linebreaks }}
+      </div>
+    </article>
+
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-semibold">Коментарі ({{ article.comment_count }})</h2>
+      </div>
+
+      <div class="space-y-3">
+        {% for comment in comments %}
+          {% include "blog/_comment.html" %}
+        {% empty %}
+          <div class="rounded-lg border p-4" style="border-color: var(--border); background: var(--surface); color: var(--muted);">
+            Поки немає коментарів.
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="rounded-lg border p-5" style="border-color: var(--border); background: var(--surface);">
+        <h3 class="mb-3 text-sm uppercase tracking-widest" style="color: var(--muted);">Новий коментар</h3>
+        {% if user.is_authenticated %}
+          <form method="post" class="space-y-3">
+            {% csrf_token %}
+            {{ comment_form.non_field_errors }}
+            {{ comment_form.body }}
+            <button class="btn btn-primary" type="submit">
+              Опублікувати
+            </button>
+          </form>
+        {% else %}
+          <p class="text-sm" style="color: var(--muted);">
+            Щоб залишити коментар, будь ласка, <a class="underline" href="{% url 'login' %}">увійдіть</a>.
+          </p>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+
+  <div id="comment-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4" style="background: rgba(15, 23, 42, 0.7);">
+    <div class="w-full max-w-md rounded-lg border p-6" style="border-color: var(--danger); background: var(--surface);">
+      <h3 class="text-lg font-semibold" style="color: var(--danger);">Підтвердіть видалення</h3>
+      <p class="mt-2 text-sm" style="color: var(--muted);">
+        Ви впевнені, що хочете видалити цей коментар?
+      </p>
+      <form id="comment-delete-form" method="post" class="mt-6 flex gap-3">
+        {% csrf_token %}
+        <button class="btn btn-danger" type="submit">
+          Видалити
+        </button>
+        <button
+          type="button"
+          id="comment-cancel"
+          class="btn"
+        >
+          Скасувати
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById('comment-modal');
+    const cancelButton = document.getElementById('comment-cancel');
+    const deleteForm = document.getElementById('comment-delete-form');
+    const deleteButtons = document.querySelectorAll('[data-comment-delete]');
+
+    deleteButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const url = button.getAttribute('data-delete-url');
+        deleteForm.setAttribute('action', url);
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      });
+    });
+
+    cancelButton.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    });
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    });
+  </script>
+{% endblock %}

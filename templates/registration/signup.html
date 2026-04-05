@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Реєстрація{% endblock %}
+
+{% block content %}
+  <div class="flex justify-center">
+  <div class="w-full max-w-md rounded-lg border p-6" style="border-color: var(--border); background: var(--surface); box-shadow: var(--shadow);">
+    <h1 class="text-2xl font-semibold">Реєстрація</h1>
+    <form method="post" class="mt-6 space-y-4">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div>
+        <label class="text-sm" style="color: var(--muted);">Ім'я</label>
+        {{ form.display_name }}
+      </div>
+      <div>
+        <label class="text-sm" style="color: var(--muted);">Електронна пошта</label>
+        {{ form.email }}
+      </div>
+      <div>
+        <label class="text-sm" style="color: var(--muted);">Пароль</label>
+        {{ form.password1 }}
+      </div>
+      <div>
+        <label class="text-sm" style="color: var(--muted);">Повторіть пароль</label>
+        {{ form.password2 }}
+      </div>
+      <button class="btn btn-primary w-full" type="submit">
+        Створити акаунт
+      </button>
+    </form>
+  </div>
+  </div>
+{% endblock %}
